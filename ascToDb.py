@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sqlite3
+import codecs
+import csv
 
-
-import csv, sqlite3
-
-con = sqlite3.connect('data_berka.db')
+dbfile = 'data_berka.db'
+if os.path.exists(dbfile): 
+	os.remove(dbfile)
+con = sqlite3.connect(dbfile)
 cur = con.cursor()
 cur.execute("""	CREATE TABLE district 	(A1 INT,
 					A2 TEXT,
@@ -79,15 +82,13 @@ cur.execute("""	CREATE TABLE district 	(A1 INT,
 
 """)
 
-"""
-with open('data.csv','rb') as fin: # `with` statement available in 2.5+
-    # csv.DictReader uses first line in file for column headings by default
-    dr = csv.DictReader(fin) # comma is default delimiter
-    to_db = [(i['col1'], i['col2']) for i in dr]
+with open('data_berka/district.asc','rb') as f:
+    data = csv.DictReader(f)
+    to_db = [(i['A1'], i['A2'], i['A3'], i['A4'], i['A5'], i['A6'], i['A7'], i['A8'], i['A9'], i['A10'], i['A11'], i['A12'], i['A13'], i['A14'], i['A15'], i['A16']) for i in data]
 
-cur.executemany("INSERT INTO t (col1, col2) VALUES (?, ?);", to_db)
+cur.executemany("INSERT INTO district (A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", to_db)
 con.commit()
+
+#Same with others tables...
+
 con.close()
-"""
-
-
