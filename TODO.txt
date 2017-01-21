@@ -1,0 +1,5 @@
+Preveer impagos usando las tablas loan, accounts y district
+Contar el numero de impagos de las cuentas, ver a donde pertenecen y hacer una grafica distrito/num_impagos
+
+Hacer un dbscan o un kmeans y hacer un par de clusters uno para distritos
+sin riesgo de impago y otro para los que tengan riesgo
