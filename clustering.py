@@ -31,7 +31,7 @@ todas_regiones.extend((region, 0) for region in regiones_BBDD if region not in (
 
 print todas_regiones
 
-""" Applying DBSCAN algorithm
+""" Plotting the result
 """
 from matplotlib import pyplot
 
@@ -45,5 +45,41 @@ for dupla in todas_regiones:
 miX = [id[0] for id in region_id] # ID DE LA REGION
 miY = [region[1] for region in todas_regiones] # NUM DE IMPAGOS DE LA REGION
 
-pyplot.scatter(miX, miY)
+# pyplot.scatter(miX, miY)
+# pyplot.show()
+
+""" Ahora creamos una lista con tuplas del ID de la region y el num. de impagos
+"""
+X = zip(miX, miY)
+
+""" Queremos crear 2 clusters, uno para riesgo de impago y otro para no riesgo
+"""
+number_clusters = 2
+
+from sklearn.preprocessing import StandardScaler
+from sklearn import cluster, metrics
+import numpy
+
+X = StandardScaler().fit_transform(X)
+spectral = cluster.SpectralClustering(n_clusters=number_clusters, eigen_solver='arpack')
+spectral.fit(X)
+
+if hasattr(spectral, 'labels_'):
+    labels = spectral.labels_.astype(numpy.int)
+else:
+    labels = spectral.predict(X)
+
+# Plot
+colors = numpy.array(['r', 'b']) #rojo o azul
+
+pyplot.scatter(X[:, 0], X[:, 1], color=colors[labels].tolist(), s=15)
+
+pyplot.xticks(())
+pyplot.yticks(())
+
+msg = "Spectral algorithm, number of clusters "+ str(number_clusters) + \
+        "\nSilhouette Coefficient: %0.3f" % metrics.silhouette_score(numpy.asarray(X), labels)
+
+pyplot.xlabel(msg)
+
 pyplot.show()
