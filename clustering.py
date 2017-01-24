@@ -4,6 +4,7 @@
 # http://lisp.vse.cz/pkdd99/berka.htm
 
 import sqlite3
+import numpy
 
 connection = sqlite3.connect('data_berka.db')
 cursor = connection.cursor()
@@ -50,7 +51,7 @@ miY = [region[1] for region in todas_regiones] # NUM DE IMPAGOS DE LA REGION
 
 """ Ahora creamos una lista con tuplas del ID de la region y el num. de impagos
 """
-X = zip(miX, miY)
+X = zip(numpy.zeros(len(miY)), miY) #No debemos meter "miX" porque el clusteing se vería afectado por la propia colocación aleatoria de los id y no es significativo.
 
 """ Queremos crear 2 clusters, uno para riesgo de impago y otro para no riesgo
 """
@@ -58,7 +59,7 @@ number_clusters = 2
 
 from sklearn.preprocessing import StandardScaler
 from sklearn import cluster, metrics
-import numpy
+
 
 X = StandardScaler().fit_transform(X)
 spectral = cluster.SpectralClustering(n_clusters=number_clusters, eigen_solver='arpack')
@@ -72,7 +73,7 @@ else:
 # Plot
 colors = numpy.array(['r', 'b']) #rojo o azul
 
-pyplot.scatter(X[:, 0], X[:, 1], color=colors[labels].tolist(), s=15)
+pyplot.scatter(miX[:], X[:, 1], color=colors[labels].tolist(), s=15)
 
 pyplot.xticks(())
 pyplot.yticks(())
