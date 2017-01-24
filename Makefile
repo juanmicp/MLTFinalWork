@@ -1,4 +1,4 @@
 all: exec
 
 exec:
-	python clustering.py
+	python src/clustering.py

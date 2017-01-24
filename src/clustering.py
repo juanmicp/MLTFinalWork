@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# http://lisp.vse.cz/pkdd99/berka.htm
-
 import sqlite3
 import numpy
 
-connection = sqlite3.connect('data_berka.db')
+ddbb_name = 'ddbb/data_berka.db'
+connection = sqlite3.connect(ddbb_name)
 cursor = connection.cursor()
 
 
@@ -19,14 +18,14 @@ cursor.execute("""SELECT A3, COUNT(A3) FROM district WHERE A1 IN (
                   )
                   GROUP BY A3""")
 
-# Regiones que tienen algun impago
+# Regions with any unpaid loan
 regiones_con_impagos = [(str(row[0]), int(row[1])) for row in cursor.fetchall()]
 
-# Leemos todas las regiones que hay en la BBDD
+# Reading all regions on the database
 cursor.execute("""SELECT DISTINCT(A3) FROM district""")
 regiones_BBDD = [str(x[0]) for x in cursor.fetchall()]
 
-# Ahora creamos una lista con las regiones que no estan en el vector de regiones con impagos y con las que sí
+# Creating a list with the regions with unpaid loans and the ones with 0 unpaid loans
 todas_regiones = list(regiones_con_impagos)
 todas_regiones.extend((region, 0) for region in regiones_BBDD if region not in (reg_imp[0] for reg_imp in regiones_con_impagos))
 
@@ -36,33 +35,31 @@ print todas_regiones
 """
 from matplotlib import pyplot
 
-# Nos inventamos un ID numerico para cada region y poder hacer una grafica
+# Making up an ID for each region to be able to plot a graph with them
 region_id = []
 id = -1
 for dupla in todas_regiones:
     id += 1
     region_id.append((id, dupla[0]))
 
-miX = [id[0] for id in region_id] # ID DE LA REGION
-miY = [region[1] for region in todas_regiones] # NUM DE IMPAGOS DE LA REGION
+miX = [id[0] for id in region_id] # REGION ID
+miY = [region[1] for region in todas_regiones] # NUM OF UNPAID LOANS ON THE REGION
 
-# pyplot.scatter(miX, miY)
-# pyplot.show()
+pyplot.scatter(miX, miY)
+pyplot.show()
 
-""" Ahora creamos una lista con tuplas del ID de la region y el num. de impagos
-"""
-X = zip(numpy.zeros(len(miY)), miY) #No debemos meter "miX" porque el clusteing se vería afectado por la propia colocación aleatoria de los id y no es significativo.
+#The clustering would be affected by the random IDs
+X = zip(numpy.zeros(len(miY)), miY)
 
-""" Queremos crear 2 clusters, uno para riesgo de impago y otro para no riesgo
+""" Two clusters are needed; for regions with risk of unpaid loans and for those without risk
 """
 number_clusters = 2
 
 from sklearn.preprocessing import StandardScaler
 from sklearn import cluster, metrics
 
-
 X = StandardScaler().fit_transform(X)
-spectral = cluster.SpectralClustering(n_clusters=number_clusters, eigen_solver='arpack')
+spectral = cluster.SpectralClustering(n_clusters=number_clusters, eigen_solver='arpack', affinity='rbf')
 spectral.fit(X)
 
 if hasattr(spectral, 'labels_'):
@@ -71,13 +68,11 @@ else:
     labels = spectral.predict(X)
 
 # Plot
-colors = numpy.array(['r', 'b']) #rojo o azul
+colors = numpy.array(['r', 'b']) #red or blue
 
 pyplot.scatter(miX[:], X[:, 1], color=colors[labels].tolist(), s=15)
 
-R=[]
-for region, n in todas_regiones:
-	R.append(region)
+R = [x[0] for x in todas_regiones]
 
 pyplot.xticks(miX, R, size='small', rotation=45)
 pyplot.yticks(())

@@ -9,7 +9,7 @@ def readAsc (name):
 	f = codecs.open("data_berka/" + name + ".asc", "r", "utf-8")
 	data = []
 	header = True
-	for line in f: 
+	for line in f:
 		if (not header):
 			row = tuple(line.replace ('"', '').split(";"))
 			if row != []:
@@ -19,7 +19,7 @@ def readAsc (name):
 
 
 dbfile = 'data_berka.db'
-if os.path.exists(dbfile): 
+if os.path.exists(dbfile):
 	os.remove(dbfile)
 con = sqlite3.connect(dbfile)
 cur = con.cursor()
