@@ -69,7 +69,6 @@ if hasattr(spectral, 'labels_'):
     labels = spectral.labels_.astype(numpy.int)
 else:
     labels = spectral.predict(X)
-
 # Plot
 colors = numpy.array(['r', 'b']) #rojo o azul
 
