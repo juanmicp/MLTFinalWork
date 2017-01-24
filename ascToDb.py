@@ -118,5 +118,4 @@ con.commit()
 
 cur.executemany("INSERT INTO trans VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", readAsc("trans"))
 con.commit()
-
 con.close()
