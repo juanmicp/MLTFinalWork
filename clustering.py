@@ -75,12 +75,17 @@ colors = numpy.array(['r', 'b']) #rojo o azul
 
 pyplot.scatter(miX[:], X[:, 1], color=colors[labels].tolist(), s=15)
 
-pyplot.xticks(())
+R=[]
+for region, n in todas_regiones:
+	R.append(region)
+
+pyplot.xticks(miX, R, size='small', rotation=45)
 pyplot.yticks(())
 
-msg = "Spectral algorithm, number of clusters "+ str(number_clusters) + \
-        "\nSilhouette Coefficient: %0.3f" % metrics.silhouette_score(numpy.asarray(X), labels)
+print("Spectral algorithm, number of clusters "+ str(number_clusters) + \
+        "\nSilhouette Coefficient: %0.3f" % metrics.silhouette_score(numpy.asarray(X), labels))
 
-pyplot.xlabel(msg)
+pyplot.ylabel('Unpaid loans')
+pyplot.xlabel('Regions')
 
 pyplot.show()
